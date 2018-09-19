@@ -1,6 +1,7 @@
 package com.vector.security;
 
 import com.vector.security.config.ClientDetailServiceImpl;
+import com.vector.security.config.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private ClientDetailServiceImpl clientDetailsService;
 
     @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
     private TokenStore tokenStore;
 
     @Override
@@ -37,7 +41,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore)
-                .authenticationManager(authenticationManager);
+                .authenticationManager(authenticationManager)
+                .userDetailsService(userDetailsService); //让refresh_token 起作用
     }
 
 }
