@@ -1,10 +1,12 @@
 package com.vector.security.config;
 
+import com.vector.security.dao.ClientDao;
+import com.vector.security.model.OAuthClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
+import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -13,23 +15,31 @@ import org.springframework.util.StringUtils;
 public class ClientDetailServiceImpl implements ClientDetailsService {
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private ClientDao clientDao;
 
     @Override
     public ClientDetails loadClientByClientId(String clientId)
             throws ClientRegistrationException {
 
-        BaseClientDetails client = new BaseClientDetails();
-        client.setClientId(clientId);
-        client.setClientSecret(passwordEncoder.encode("123456"));
+        OAuthClient client = clientDao.findById(clientId).orElse(null);
+        if (client == null) {
+            throw new NoSuchClientException("未找到客户端");
+        }
 
-        client.setAuthorizedGrantTypes(StringUtils.commaDelimitedListToSet("password,refresh_token,authorization_code"));
-        client.setScope(StringUtils.commaDelimitedListToSet("all,read,write"));
+        BaseClientDetails clientDetails = new BaseClientDetails();
 
-        client.setAccessTokenValiditySeconds(7200);
+        clientDetails.setClientId(clientId);
+        clientDetails.setClientSecret(client.getAppSecret());
+        clientDetails.setAuthorizedGrantTypes(StringUtils.commaDelimitedListToSet(client.getGrantTypes()));
 
-        client.setRegisteredRedirectUri(StringUtils.commaDelimitedListToSet("http://www.baidu.com"));
+        clientDetails.setScope(StringUtils.commaDelimitedListToSet(client.getScope()));
+        clientDetails.setAutoApproveScopes(StringUtils.commaDelimitedListToSet(client.getAutoApproveScopes()));
 
-        return client;
+        String redirectUrl = client.getRedirectUrl();
+        if (!StringUtils.isEmpty(redirectUrl)) {
+            clientDetails.setRegisteredRedirectUri(StringUtils.commaDelimitedListToSet(redirectUrl));
+        }
+
+        return clientDetails;
     }
 }
