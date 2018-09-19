@@ -28,9 +28,18 @@ public class ClientDetailServiceImpl implements ClientDetailsService {
 
         BaseClientDetails clientDetails = new BaseClientDetails();
 
+        //相当于账号和密码
         clientDetails.setClientId(clientId);
         clientDetails.setClientSecret(client.getAppSecret());
-        clientDetails.setAuthorizedGrantTypes(StringUtils.commaDelimitedListToSet(client.getGrantTypes()));
+
+        //支持的授权模式，OAuth2 定义了4种模式
+        //一般用：password,refresh_token,authorization_code
+        clientDetails.setAuthorizedGrantTypes(
+                StringUtils.commaDelimitedListToSet(client.getGrantTypes()));
+
+        //时间
+        clientDetails.setAccessTokenValiditySeconds(client.getAccessTokenValidity());
+        clientDetails.setRefreshTokenValiditySeconds(client.getRefreshTokenValidity());
 
         clientDetails.setScope(StringUtils.commaDelimitedListToSet(client.getScope()));
         clientDetails.setAutoApproveScopes(StringUtils.commaDelimitedListToSet(client.getAutoApproveScopes()));

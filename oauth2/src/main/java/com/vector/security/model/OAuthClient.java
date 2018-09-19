@@ -12,16 +12,26 @@ import javax.persistence.Table;
 @Table(name = "oauth_client_details")
 public class OAuthClient {
 
+    //相当于账号和密码
     private String appId;
     private String appSecret;
-    //授权类型
+
+    //支持的授权模式，OAuth2 定义了4种模式
+    //一般用：password,refresh_token,authorization_code
     private String grantTypes;
-    //应该授予的权限
+
+    //应该授予的权限，根据这两个字段再做判断，跟自己用的
     private String authorities;
     private String scope;
-    private String redirectUrl;
+
+    //token的有效期，单位：s
     private Integer accessTokenValidity;
     private Integer refreshTokenValidity;
+
+    //授权码方式认证的时候需要
+    private String redirectUrl;
+
+    //在特定范围内进行用户批准
     private String autoApproveScopes;
 
     @Id

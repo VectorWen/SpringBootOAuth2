@@ -17,7 +17,6 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/user/hello").hasRole("user")
                 .anyRequest().authenticated();
 
-        http.anonymous().disable();
     }
 
 }
