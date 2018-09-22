@@ -22,6 +22,7 @@ public class OAuthClient {
 
     //应该授予的权限，根据这两个字段再做判断，跟自己用的
     private String authorities;
+    //配置该客户端支持的scope，请求的时候必须有含有，否则报错
     private String scope;
 
     //token的有效期，单位：s
